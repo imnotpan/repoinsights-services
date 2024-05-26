@@ -20,9 +20,11 @@ services:
     command: -p ${CONSOLIDADA_PORT}
     volumes:
       - ./docker/postgres-consolidada:/var/lib/postgresql/data
-      - ./${DB_SCHEMA}:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./${DB_DATA}:/docker-entrypoint-initdb.d/02-data.sql
-      - ./constraints.sql:/docker-entrypoint-initdb.d/03-constraints.sql
+      #- ./${DB_SCHEMA}:/docker-entrypoint-initdb.d/01-schema.sql
+      #- ./${DB_DATA}:/docker-entrypoint-initdb.d/02-data.sql
+      #- ./constraints.sql:/docker-entrypoint-initdb.d/03-constraints.sql
+    networks:
+      - repoinsight_network
 
   temporal:
     image: postgres
@@ -51,7 +53,10 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBIT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBIT_PASS}
+    networks:
+      - repoinsight_network
 
+  
   extract_service:
     build:
       context: .
@@ -106,6 +111,10 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - ./docker/trapaso_service:/app/logs
+
+networks:
+  repoinsight_network:
+    external: true
 
 volumes:
   db:
